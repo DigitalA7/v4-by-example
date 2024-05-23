@@ -38,14 +38,14 @@ contract CustomCurveTest is Test, Deployers {
         // Create the pool
         poolKey = PoolKey(currency0, currency1, 3000, 60, IHooks(hook));
         poolId = poolKey.toId();
-        manager.initialize(poolKey, SQRT_RATIO_1_1, ZERO_BYTES);
+        manager.initialize(poolKey, SQRT_PRICE_1_1, ZERO_BYTES);
 
         PoolKey memory hookless = PoolKey(currency0, currency1, 3000, 60, IHooks(address(0x0)));
-        manager.initialize(hookless, SQRT_RATIO_1_1, ZERO_BYTES);
+        manager.initialize(hookless, SQRT_PRICE_1_1, ZERO_BYTES);
 
         // add liquidity so theres tokens to take
         modifyLiquidityRouter.modifyLiquidity(
-            hookless, IPoolManager.ModifyLiquidityParams(-60, 60, 10000 ether), ZERO_BYTES
+            hookless, IPoolManager.ModifyLiquidityParams(-60, 60, 10000 ether, 0), ZERO_BYTES
         );
 
         // Provide liquidity to the pool

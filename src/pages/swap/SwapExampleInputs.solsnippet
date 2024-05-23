@@ -1,8 +1,8 @@
 PoolSwapTest swapRouter = PoolSwapTest(0x01);
 
 // slippage tolerance to allow for unlimited price impact
-uint160 public constant MIN_PRICE_LIMIT = TickMath.MIN_SQRT_RATIO + 1;
-uint160 public constant MAX_PRICE_LIMIT = TickMath.MAX_SQRT_RATIO - 1;
+uint160 public constant MIN_PRICE_LIMIT = TickMath.MIN_SQRT_PRICE + 1;
+uint160 public constant MAX_PRICE_LIMIT = TickMath.MAX_SQRT_PRICE - 1;
 
 address token0 = address(0x11);
 address token1 = address(0x22);

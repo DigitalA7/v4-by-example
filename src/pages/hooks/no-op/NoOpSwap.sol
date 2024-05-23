@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {BaseHook} from "@v4-by-example/utils/BaseHook.sol";
+import {BaseHook} from "v4-periphery/BaseHook.sol";
 
 import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
+import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
 
 contract NoOpSwap is BaseHook {
     using PoolIdLibrary for PoolKey;
@@ -26,22 +27,28 @@ contract NoOpSwap is BaseHook {
             beforeSwap: true, // -- No-op'ing the swap --  //
             afterSwap: false,
             beforeDonate: false,
-            afterDonate: false
+            afterDonate: false,
+            beforeSwapReturnDelta: false,
+            afterSwapReturnDelta: false,
+            afterAddLiquidityReturnDelta: false,
+            afterRemoveLiquidityReturnDelta: false
         });
     }
 
     function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
         external
         override
-        returns (bytes4)
+        returns (bytes4, BeforeSwapDelta, uint24)
     {
         // ------------------------------------------------------------------------------- //
         // Example NoOp: if swap amount is 69e18, then the swap will be skipped            //
         // ------------------------------------------------------------------------------- //
         // TODO: update
-        if (params.amountSpecified == 69e18) return BaseHook.beforeSwap.selector;
+        if (params.amountSpecified == 69e18) {
+            return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
+        }
 
         beforeSwapCount[key.toId()]++;
-        return BaseHook.beforeSwap.selector;
+        return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
     }
 }

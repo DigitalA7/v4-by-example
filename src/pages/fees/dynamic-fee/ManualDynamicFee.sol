@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {BaseHook} from "@v4-by-example/utils/BaseHook.sol";
+import {BaseHook} from "v4-periphery/BaseHook.sol";
 
 import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
@@ -32,7 +32,7 @@ contract ManualDynamicFee is BaseHook {
             uint256 timeElapsed = block.timestamp - startTimestamp;
             _currentFee = timeElapsed > 495000 ? uint24(MIN_FEE) : uint24((START_FEE - (timeElapsed * decayRate)) / 10);
         }
-        poolManager.updateDynamicSwapFee(key, _currentFee);
+        poolManager.updateDynamicLPFee(key, _currentFee);
     }
 
     function afterInitialize(address, PoolKey calldata key, uint160, int24, bytes calldata)
@@ -56,7 +56,11 @@ contract ManualDynamicFee is BaseHook {
             beforeSwap: false,
             afterSwap: false,
             beforeDonate: false,
-            afterDonate: false
+            afterDonate: false,
+            beforeSwapReturnDelta: false,
+            afterSwapReturnDelta: false,
+            afterAddLiquidityReturnDelta: false,
+            afterRemoveLiquidityReturnDelta: false
         });
     }
 }

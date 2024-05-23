@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {BaseHook} from "@v4-by-example/utils/BaseHook.sol";
+import {BaseHook} from "v4-periphery/BaseHook.sol";
 
 import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
+import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
 
 /// @notice A time-decaying dynamically fee, updated automatically with beforeSwap()
 contract AutoDynamicFee is BaseHook {
@@ -32,7 +33,7 @@ contract AutoDynamicFee is BaseHook {
             uint256 timeElapsed = block.timestamp - startTimestamp;
             _currentFee = timeElapsed > 495000 ? uint24(MIN_FEE) : uint24((START_FEE - (timeElapsed * decayRate)) / 10);
         }
-        poolManager.updateDynamicSwapFee(key, _currentFee);
+        poolManager.updateDynamicLPFee(key, _currentFee);
     }
 
     /// @dev this example hook contract does not implement any hooks
@@ -47,19 +48,23 @@ contract AutoDynamicFee is BaseHook {
             beforeSwap: true,
             afterSwap: false,
             beforeDonate: false,
-            afterDonate: false
+            afterDonate: false,
+            beforeSwapReturnDelta: false,
+            afterSwapReturnDelta: false,
+            afterAddLiquidityReturnDelta: false,
+            afterRemoveLiquidityReturnDelta: false
         });
     }
 
     function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata, bytes calldata)
         external
         override
-        returns (bytes4)
+        returns (bytes4, BeforeSwapDelta, uint24)
     {
         // update the fee on every swap
         // optimization: only call for top-of-block swap
         setFee(key);
-        return BaseHook.beforeSwap.selector;
+        return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
     }
 
     function afterInitialize(address, PoolKey calldata key, uint160, int24, bytes calldata)

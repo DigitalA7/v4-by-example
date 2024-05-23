@@ -2,14 +2,14 @@
 pragma solidity ^0.8.20;
 
 // TODO: replace with v4-periphery/BaseHook.sol when compatibility is fixed
-import {BaseHook} from "@v4-by-example/utils/BaseHook.sol";
+import {BaseHook} from "v4-periphery/BaseHook.sol";
 
 import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {Currency, CurrencyLibrary} from "v4-core/src/types/Currency.sol";
-
+import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 
 contract CustomCurve is BaseHook {
@@ -29,7 +29,11 @@ contract CustomCurve is BaseHook {
             beforeSwap: true, // -- No-op'ing the swap --  //
             afterSwap: false,
             beforeDonate: false,
-            afterDonate: false
+            afterDonate: false,
+            beforeSwapReturnDelta: false,
+            afterSwapReturnDelta: false,
+            afterAddLiquidityReturnDelta: false,
+            afterRemoveLiquidityReturnDelta: false
         });
     }
 
@@ -69,7 +73,7 @@ contract CustomCurve is BaseHook {
     function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
         external
         override
-        returns (bytes4)
+        returns (bytes4, BeforeSwapDelta, uint24)
     {
         // calculate the amount of tokens, based on a custom curve
         uint256 tokenInAmount = getTokenInAmount(params); // amount of tokens paid by the swapper
@@ -87,7 +91,7 @@ contract CustomCurve is BaseHook {
         poolManager.settle(outbound);
 
         // prevent normal v4 swap logic from executing
-        return BaseHook.beforeSwap.selector;
+        return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
     }
 
     /// @notice No liquidity will be managed by v4 PoolManager

@@ -10,7 +10,7 @@ import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
-import {SwapFeeLibrary} from "v4-core/src/libraries/SwapFeeLibrary.sol";
+import {LPFeeLibrary} from "v4-core/src/libraries/LPFeeLibrary.sol";
 import {Deployers} from "v4-core/test/utils/Deployers.sol";
 import {HookMiner} from "./utils/HookMiner.sol";
 import {GasSnapshot} from "forge-gas-snapshot/GasSnapshot.sol";
@@ -49,23 +49,23 @@ contract DynamicFeesTest is Test, Deployers, GasSnapshot {
         require(address(manualDynamicFee) == hookAddress, "hook address mismatch");
 
         // Create the pools
-        autoDynamicFeePoolKey = PoolKey(currency0, currency1, SwapFeeLibrary.DYNAMIC_FEE_FLAG, 60, IHooks(autoDynamicFee));
-        manager.initialize(autoDynamicFeePoolKey, SQRT_RATIO_1_1, ZERO_BYTES);
+        autoDynamicFeePoolKey = PoolKey(currency0, currency1, LPFeeLibrary.DYNAMIC_FEE_FLAG, 60, IHooks(autoDynamicFee));
+        manager.initialize(autoDynamicFeePoolKey, SQRT_PRICE_1_1, ZERO_BYTES);
 
         manualDynamicFeePoolKey =
-            PoolKey(currency0, currency1, SwapFeeLibrary.DYNAMIC_FEE_FLAG, 60, IHooks(manualDynamicFee));
-        manager.initialize(manualDynamicFeePoolKey, SQRT_RATIO_1_1, ZERO_BYTES);
+            PoolKey(currency0, currency1, LPFeeLibrary.DYNAMIC_FEE_FLAG, 60, IHooks(manualDynamicFee));
+        manager.initialize(manualDynamicFeePoolKey, SQRT_PRICE_1_1, ZERO_BYTES);
 
         // Provide liquidity to the pool
         modifyLiquidityRouter.modifyLiquidity(
             autoDynamicFeePoolKey,
-            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 100000 ether),
+            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 100000 ether, 0),
             ZERO_BYTES
         );
 
         modifyLiquidityRouter.modifyLiquidity(
             manualDynamicFeePoolKey,
-            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 100000 ether),
+            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 100000 ether, 0),
             ZERO_BYTES
         );
     }
@@ -166,7 +166,7 @@ contract DynamicFeesTest is Test, Deployers, GasSnapshot {
         });
 
         PoolSwapTest.TestSettings memory testSettings =
-            PoolSwapTest.TestSettings({withdrawTokens: true, settleUsingTransfer: true, currencyAlreadySent: false});
+            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false});
 
         snapStart("autodynamic fee");
         swapRouter.swap(autoDynamicFeePoolKey, params, testSettings, ZERO_BYTES);
@@ -187,7 +187,7 @@ contract DynamicFeesTest is Test, Deployers, GasSnapshot {
         });
 
         PoolSwapTest.TestSettings memory testSettings =
-            PoolSwapTest.TestSettings({withdrawTokens: true, settleUsingTransfer: true, currencyAlreadySent: false});
+            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false});
 
         snapStart("manual dynamic fee");
         swapRouter.swap(manualDynamicFeePoolKey, params, testSettings, ZERO_BYTES);

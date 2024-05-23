@@ -19,7 +19,12 @@ contract CreateLiquidity {
         // if 0 < liquidity: add liquidity -- otherwise remove liquidity
         lpRouter.modifyLiquidity(
             poolKey,
-            IPoolManager.ModifyLiquidityParams({tickLower: tickLower, tickUpper: tickUpper, liquidityDelta: liquidity}),
+            IPoolManager.ModifyLiquidityParams({
+                tickLower: tickLower,
+                tickUpper: tickUpper,
+                liquidityDelta: liquidity,
+                salt: 0
+            }),
             hookData
         );
     }

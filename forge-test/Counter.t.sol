@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
@@ -10,22 +10,20 @@ import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
+import {PoolSwapTest} from "v4-core/src/test/PoolSwapTest.sol";
 import {Deployers} from "v4-core/test/utils/Deployers.sol";
 import {Counter} from "./Counter.sol";
 import {HookMiner} from "./utils/HookMiner.sol";
-import {GasSnapshot} from "forge-gas-snapshot/GasSnapshot.sol";
-import {PoolSwapTest} from "v4-core/src/test/PoolSwapTest.sol";
 
-contract CounterTest is Test, Deployers, GasSnapshot {
+contract CounterTest is Test, Deployers {
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
 
     Counter counter;
-    PoolKey poolKey;
     PoolId poolId;
 
     function setUp() public {
-        // creates the pool manager, test tokens, and other utility routers
+        // creates the pool manager, utility routers, and test tokens
         Deployers.deployFreshManagerAndRouters();
         Deployers.deployMintAndApprove2Currencies();
 
@@ -40,20 +38,18 @@ contract CounterTest is Test, Deployers, GasSnapshot {
         require(address(counter) == hookAddress, "CounterTest: hook address mismatch");
 
         // Create the pool
-        poolKey = PoolKey(currency0, currency1, 3000, 60, IHooks(address(counter)));
-        poolId = poolKey.toId();
-        manager.initialize(poolKey, SQRT_RATIO_1_1, ZERO_BYTES);
+        key = PoolKey(currency0, currency1, 3000, 60, IHooks(address(counter)));
+        poolId = key.toId();
+        manager.initialize(key, SQRT_PRICE_1_1, ZERO_BYTES);
 
         // Provide liquidity to the pool
+        modifyLiquidityRouter.modifyLiquidity(key, IPoolManager.ModifyLiquidityParams(-60, 60, 10 ether, 0), ZERO_BYTES);
         modifyLiquidityRouter.modifyLiquidity(
-            poolKey, IPoolManager.ModifyLiquidityParams(-60, 60, 10 ether), ZERO_BYTES
+            key, IPoolManager.ModifyLiquidityParams(-120, 120, 10 ether, 0), ZERO_BYTES
         );
         modifyLiquidityRouter.modifyLiquidity(
-            poolKey, IPoolManager.ModifyLiquidityParams(-120, 120, 10 ether), ZERO_BYTES
-        );
-        modifyLiquidityRouter.modifyLiquidity(
-            poolKey,
-            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 10 ether),
+            key,
+            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 10 ether, 0),
             ZERO_BYTES
         );
     }
@@ -67,31 +63,29 @@ contract CounterTest is Test, Deployers, GasSnapshot {
         assertEq(counter.afterSwapCount(poolId), 0);
 
         // Perform a test swap //
-        int256 amount = -100;
         bool zeroForOne = true;
-        BalanceDelta swapDelta = swap(poolKey, zeroForOne, amount, ZERO_BYTES);
+        int256 amountSpecified = -1e18; // negative number indicates exact input swap!
+        BalanceDelta swapDelta = swap(key, zeroForOne, amountSpecified, ZERO_BYTES);
         // ------------------- //
 
-        assertEq(int256(swapDelta.amount0()), amount);
+        assertEq(int256(swapDelta.amount0()), amountSpecified);
 
         assertEq(counter.beforeSwapCount(poolId), 1);
         assertEq(counter.afterSwapCount(poolId), 1);
     }
 
-    function test_counter_snapshot() public {
-        int256 amount = 1e18;
-        bool zeroForOne = true;
-        IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
-            zeroForOne: zeroForOne,
-            amountSpecified: amount,
-            sqrtPriceLimitX96: zeroForOne ? MIN_PRICE_LIMIT : MAX_PRICE_LIMIT // unlimited impact
-        });
+    function testLiquidityHooks() public {
+        // positions were created in setup()
+        assertEq(counter.beforeAddLiquidityCount(poolId), 3);
+        assertEq(counter.beforeRemoveLiquidityCount(poolId), 0);
 
-        PoolSwapTest.TestSettings memory testSettings =
-            PoolSwapTest.TestSettings({withdrawTokens: true, settleUsingTransfer: true, currencyAlreadySent: false});
+        // remove liquidity
+        int256 liquidityDelta = -1e18;
+        modifyLiquidityRouter.modifyLiquidity(
+            key, IPoolManager.ModifyLiquidityParams(-60, 60, liquidityDelta, 0), ZERO_BYTES
+        );
 
-        snapStart("counter");
-        swapRouter.swap(poolKey, params, testSettings, ZERO_BYTES);
-        snapEnd();
+        assertEq(counter.beforeAddLiquidityCount(poolId), 3);
+        assertEq(counter.beforeRemoveLiquidityCount(poolId), 1);
     }
 }
