@@ -10,10 +10,14 @@ import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
 import {Currency, CurrencyLibrary} from "v4-core/src/types/Currency.sol";
 import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
+import {CurrencySettleTake} from "v4-core/src/libraries/CurrencySettleTake.sol";
+import {SafeCast} from "v4-core/src/libraries/SafeCast.sol";
 
 contract FixedHookFee is BaseHook {
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
+    using CurrencySettleTake for Currency;
+    using SafeCast for uint256;
 
     uint256 public constant FIXED_HOOK_FEE = 0.0001e18;
 
@@ -27,28 +31,35 @@ contract FixedHookFee is BaseHook {
             beforeRemoveLiquidity: false,
             afterAddLiquidity: false,
             afterRemoveLiquidity: false,
-            beforeSwap: true,
-            afterSwap: false,
+            beforeSwap: false,
+            afterSwap: true,
             beforeDonate: false,
             afterDonate: false,
             beforeSwapReturnDelta: false,
-            afterSwapReturnDelta: false,
+            afterSwapReturnDelta: true, // -- Fee charged on unspecified after swap -- //
             afterAddLiquidityReturnDelta: false,
             afterRemoveLiquidityReturnDelta: false
         });
     }
 
-    function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
+    function afterSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
         external
         override
-        returns (bytes4, BeforeSwapDelta, uint24)
+        returns (bytes4, int128, uint24)
     {
-        // take a fixed fee of 0.0001 of the input token
+        // take a fixed fee of 0.0001 of the unspecified token
+        bool exactInput = params.amountSpecified < 0;
+        bool specifiedIsZero = params.zeroForOne == exactInput;
+
+        if (specifiedIsZero) {
+            
+        }
+
         params.zeroForOne
             ? poolManager.mint(address(this), key.currency0.toId(), FIXED_HOOK_FEE)
             : poolManager.mint(address(this), key.currency1.toId(), FIXED_HOOK_FEE);
 
-        return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
+        return (BaseHook.afterSwap.selector, feeAmount.toInt128());
     }
 
     /// @dev Hook fees are kept as PoolManager claims, so collecting ERC20s will require locking
