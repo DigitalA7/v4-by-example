@@ -24,6 +24,8 @@ contract FixedHookFeeTest is Test, Deployers, GasSnapshot {
     PoolKey poolKey;
     PoolId poolId;
 
+    PoolKey hooklessKey;
+
     address alice = makeAddr("alice");
 
     function setUp() public {
@@ -32,51 +34,104 @@ contract FixedHookFeeTest is Test, Deployers, GasSnapshot {
         Deployers.deployMintAndApprove2Currencies();
 
         // Deploy the hook to an address with the correct flags
-        uint160 flags = uint160(Hooks.BEFORE_SWAP_FLAG);
+        uint160 flags = uint160(Hooks.AFTER_SWAP_FLAG | Hooks.AFTER_SWAP_RETURNS_DELTA_FLAG);
         (address hookAddress, bytes32 salt) =
             HookMiner.find(address(this), flags, type(FixedHookFee).creationCode, abi.encode(address(manager)));
         hook = new FixedHookFee{salt: salt}(IPoolManager(address(manager)));
         require(address(hook) == hookAddress, "FixedHookFeeTest: hook address mismatch");
 
-        // Create the pool
-        poolKey = PoolKey(currency0, currency1, 3000, 60, IHooks(hook));
+        // Create the pool with 0% fee
+        poolKey = PoolKey(currency0, currency1, 0, 60, IHooks(hook));
         poolId = poolKey.toId();
         manager.initialize(poolKey, SQRT_PRICE_1_1, ZERO_BYTES);
 
         // Provide liquidity to the pool
         modifyLiquidityRouter.modifyLiquidity(
-            poolKey, IPoolManager.ModifyLiquidityParams(-60, 60, 10 ether, 0), ZERO_BYTES
-        );
-        modifyLiquidityRouter.modifyLiquidity(
-            poolKey, IPoolManager.ModifyLiquidityParams(-120, 120, 10 ether, 0), ZERO_BYTES
-        );
-        modifyLiquidityRouter.modifyLiquidity(
             poolKey,
-            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 10_000 ether, 0),
+            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 100_000 ether, 0),
+            ZERO_BYTES
+        );
+
+        // create a hookless pool
+        hooklessKey = PoolKey(currency0, currency1, 0, 60, IHooks(address(0x0)));
+        manager.initialize(hooklessKey, SQRT_PRICE_1_1, ZERO_BYTES);
+
+        // Provide liquidity to the pool
+        modifyLiquidityRouter.modifyLiquidity(
+            hooklessKey,
+            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 100_000 ether, 0),
             ZERO_BYTES
         );
     }
 
-    function test_hookFee() public {
-        uint256 balanceBefore = currency0.balanceOfSelf();
-        // Perform a test swap //
-        int256 amount = 1e18;
-        bool zeroForOne = true;
-        swap(poolKey, zeroForOne, amount, ZERO_BYTES);
-        // ------------------- //
-        uint256 balanceAfter = currency0.balanceOfSelf();
+    function test_hookFee(bool zeroForOne, int256 amountSpecified) public {
+        amountSpecified = bound(amountSpecified, -100e18, 100e18);
+        // assume the swap amount is material
+        uint256 swapAmount = amountSpecified < 0 ? uint256(-amountSpecified) : uint256(amountSpecified);
+        vm.assume(swapAmount > 1e18);
 
-        // swapper paid for the fixed hook fee
-        assertEq(balanceBefore - balanceAfter, uint256(amount) + hook.FIXED_HOOK_FEE());
+        bool exactInput = amountSpecified < 0;
+        bool zeroIsSpecified = zeroForOne == exactInput;
+        Currency specifiedCurrency = zeroIsSpecified ? currency0 : currency1;
+        Currency unspecifiedCurrency = specifiedCurrency == currency0 ? currency1 : currency0;
 
-        // collect the hook fees
-        assertEq(currency0.balanceOf(alice), 0);
-        hook.collectFee(alice, currency0);
-        assertEq(currency0.balanceOf(alice), hook.FIXED_HOOK_FEE());
+        BalanceDelta withoutHookFee = swap(hooklessKey, zeroForOne, amountSpecified, ZERO_BYTES);
+
+        uint256 specifiedAmountBefore = specifiedCurrency.balanceOfSelf();
+        uint256 unspecifiedAmountBefore = unspecifiedCurrency.balanceOfSelf();
+        BalanceDelta result = swap(poolKey, zeroForOne, amountSpecified, ZERO_BYTES);
+        uint256 specifiedAmountAfter = specifiedCurrency.balanceOfSelf();
+        uint256 unspecifiedAmountAfter = unspecifiedCurrency.balanceOfSelf();
+
+        if (exactInput) {
+            assertEq(specifiedAmountBefore - specifiedAmountAfter, uint256(-amountSpecified));
+            if (zeroIsSpecified) {
+                assertEq(uint256(int256(-result.amount0())), specifiedAmountBefore - specifiedAmountAfter);
+
+                assertEq(unspecifiedAmountAfter - unspecifiedAmountBefore, uint256(int256(result.amount1())));
+                assertEq(
+                    unspecifiedAmountAfter - unspecifiedAmountBefore,
+                    uint256(int256(withoutHookFee.amount1())) - hook.FIXED_HOOK_FEE()
+                );
+            } else {
+                // token1 is specified
+                assertEq(uint256(int256(-result.amount1())), specifiedAmountBefore - specifiedAmountAfter);
+
+                assertEq(unspecifiedAmountAfter - unspecifiedAmountBefore, uint256(int256(result.amount0())));
+                assertEq(
+                    unspecifiedAmountAfter - unspecifiedAmountBefore,
+                    uint256(int256(withoutHookFee.amount0())) - hook.FIXED_HOOK_FEE()
+                );
+            }
+        } else {
+            assertEq(specifiedAmountAfter - specifiedAmountBefore, uint256(amountSpecified));
+            if (zeroIsSpecified) {
+                // token0 (exactOut) is specified
+                assertEq(uint256(int256(result.amount0())), specifiedAmountAfter - specifiedAmountBefore);
+
+                assertEq(unspecifiedAmountBefore - unspecifiedAmountAfter, uint256(int256(-result.amount1())));
+                assertEq(
+                    unspecifiedAmountBefore - unspecifiedAmountAfter,
+                    uint256(int256(-withoutHookFee.amount1())) + hook.FIXED_HOOK_FEE()
+                );
+            } else {
+                // token1 is specified
+                assertEq(uint256(int256(result.amount1())), specifiedAmountAfter - specifiedAmountBefore);
+
+                assertEq(unspecifiedAmountBefore - unspecifiedAmountAfter, uint256(int256(-result.amount0())));
+                assertEq(
+                    unspecifiedAmountBefore - unspecifiedAmountAfter,
+                    uint256(int256(-withoutHookFee.amount0())) + hook.FIXED_HOOK_FEE()
+                );
+            }
+        }
+
+        // hook collected fees
+        assertEq(manager.balanceOf(address(hook), unspecifiedCurrency.toId()), hook.FIXED_HOOK_FEE());
     }
 
     function test_snap_hookFee() public {
-        int256 amount = 1e18;
+        int256 amount = -1e18;
         bool zeroForOne = true;
         IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
             zeroForOne: zeroForOne,

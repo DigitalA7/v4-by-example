@@ -42,38 +42,31 @@ contract FixedHookFee is BaseHook {
         });
     }
 
-    function afterSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
-        external
-        override
-        returns (bytes4, int128, uint24)
-    {
+    function afterSwap(
+        address,
+        PoolKey calldata key,
+        IPoolManager.SwapParams calldata params,
+        BalanceDelta,
+        bytes calldata
+    ) external override returns (bytes4, int128) {
         // take a fixed fee of 0.0001 of the unspecified token
+
         bool exactInput = params.amountSpecified < 0;
         bool specifiedIsZero = params.zeroForOne == exactInput;
 
         if (specifiedIsZero) {
-            
+            // taking fee on unspecified currency (currency1)
+            poolManager.mint(address(this), key.currency1.toId(), FIXED_HOOK_FEE);
+        } else {
+            // taking fee on specified currency (currency0)
+            poolManager.mint(address(this), key.currency0.toId(), FIXED_HOOK_FEE);
         }
 
-        params.zeroForOne
-            ? poolManager.mint(address(this), key.currency0.toId(), FIXED_HOOK_FEE)
-            : poolManager.mint(address(this), key.currency1.toId(), FIXED_HOOK_FEE);
-
-        return (BaseHook.afterSwap.selector, feeAmount.toInt128());
+        // by returning the amount the amount the hook has taken,
+        return (BaseHook.afterSwap.selector, FIXED_HOOK_FEE.toInt128());
     }
 
-    /// @dev Hook fees are kept as PoolManager claims, so collecting ERC20s will require locking
-    function collectFee(address recipient, Currency currency) external returns (uint256 amount) {
-        amount = abi.decode(poolManager.unlock(abi.encodeCall(this.handleCollectFee, (recipient, currency))), (uint256));
-    }
-
-    /// @dev requires the lock pattern in order to call poolManager.burn
-    function handleCollectFee(address recipient, Currency currency) external returns (uint256 amount) {
-        // convert the fee (Claims) into ERC20 tokens
-        amount = poolManager.balanceOf(address(this), currency.toId());
-        poolManager.burn(address(this), currency.toId(), amount);
-
-        // direct claims (the tokens) to the recipient
-        poolManager.take(currency, recipient, amount);
-    }
+    /// @dev Because the fee is taking as an ERC6909 claim, you'll want to implement logic to collect
+    /// fee as ERC20 OR ERC6909...
+    /// ...
 }
