@@ -28,7 +28,7 @@ contract NoOpSwapTest is Test, Deployers {
         Deployers.deployMintAndApprove2Currencies();
 
         // Deploy the hook to an address with the correct flags
-        uint160 flags = uint160(Hooks.BEFORE_SWAP_FLAG);
+        uint160 flags = uint160(Hooks.BEFORE_SWAP_FLAG | Hooks.BEFORE_SWAP_RETURNS_DELTA_FLAG);
         (address hookAddress, bytes32 salt) =
             HookMiner.find(address(this), flags, type(NoOpSwap).creationCode, abi.encode(address(manager)));
         hook = new NoOpSwap{salt: salt}(IPoolManager(address(manager)));
@@ -57,13 +57,13 @@ contract NoOpSwapTest is Test, Deployers {
         assertEq(hook.beforeSwapCount(poolId), 0);
 
         // Perform a test swap //
-        int256 amount = 69e18;
+        int256 amount = -69e18;
         bool zeroForOne = true;
         BalanceDelta swapDelta = swap(poolKey, zeroForOne, amount, ZERO_BYTES);
         // ------------------- //
 
-        // no-op will return an indicator that the swap was skipped
-        assertEq(int256(swapDelta.amount0()), -1);
+        // no-op means the user does not receive any output
+        assertEq(int256(swapDelta.amount1()), 0);
 
         // Swapping with 69e18 will skip the swap logic!
         assertEq(hook.beforeSwapCount(poolId), 0);
@@ -73,7 +73,7 @@ contract NoOpSwapTest is Test, Deployers {
         assertEq(hook.beforeSwapCount(poolId), 0);
 
         // Perform a test swap //
-        int256 amount = 1e18;
+        int256 amount = -1e18;
         bool zeroForOne = true;
         BalanceDelta swapDelta = swap(poolKey, zeroForOne, amount, ZERO_BYTES);
         // ------------------- //

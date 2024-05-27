@@ -7,10 +7,14 @@ import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
-import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
+import {toBeforeSwapDelta, BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
+import {Currency, CurrencyLibrary} from "v4-core/src/types/Currency.sol";
+import {SafeCast} from "v4-core/src/libraries/SafeCast.sol";
 
 contract NoOpSwap is BaseHook {
     using PoolIdLibrary for PoolKey;
+    using CurrencyLibrary for Currency;
+    using SafeCast for uint256;
 
     mapping(PoolId => uint256 count) public beforeSwapCount;
 
@@ -28,7 +32,7 @@ contract NoOpSwap is BaseHook {
             afterSwap: false,
             beforeDonate: false,
             afterDonate: false,
-            beforeSwapReturnDelta: false,
+            beforeSwapReturnDelta: true, // -- No-op'ing the swap --  //
             afterSwapReturnDelta: false,
             afterAddLiquidityReturnDelta: false,
             afterRemoveLiquidityReturnDelta: false
@@ -40,12 +44,16 @@ contract NoOpSwap is BaseHook {
         override
         returns (bytes4, BeforeSwapDelta, uint24)
     {
-        // ------------------------------------------------------------------------------- //
-        // Example NoOp: if swap amount is 69e18, then the swap will be skipped            //
-        // ------------------------------------------------------------------------------- //
-        // TODO: update
-        if (params.amountSpecified == 69e18) {
-            return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
+        // -------------------------------------------------------------------------------------------- //
+        // Example NoOp: if swap is exactInput and the amount is 69e18, then the swap will be skipped   //
+        // -------------------------------------------------------------------------------------------- //
+        if (params.amountSpecified == -69e18) {
+            // to NoOp the exact input, we return the amount that's taken by the hook
+            uint256 amountTaken = 69e18;
+            Currency specified = params.zeroForOne == (params.amountSpecified < 0) ? key.currency0 : key.currency1;
+            poolManager.mint(address(this), specified.toId(), amountTaken);
+
+            return (BaseHook.beforeSwap.selector, toBeforeSwapDelta(amountTaken.toInt128(), 0), 0);
         }
 
         beforeSwapCount[key.toId()]++;
