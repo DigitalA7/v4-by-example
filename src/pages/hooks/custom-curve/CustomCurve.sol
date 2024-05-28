@@ -1,40 +1,49 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// TODO: replace with v4-periphery/BaseHook.sol when compatibility is fixed
 import {BaseHook} from "v4-periphery/BaseHook.sol";
-
 import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
-import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {Currency, CurrencyLibrary} from "v4-core/src/types/Currency.sol";
-import {toBeforeSwapDelta, BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
-import {IERC20} from "forge-std/interfaces/IERC20.sol";
+import {toBeforeSwapDelta, BeforeSwapDelta} from "v4-core/src/types/BeforeSwapDelta.sol";
 import {CurrencySettleTake} from "v4-core/src/libraries/CurrencySettleTake.sol";
 import {SafeCast} from "v4-core/src/libraries/SafeCast.sol";
-import {IUnlockCallback} from "v4-core/src/interfaces/callback/IUnlockCallback.sol";
 
 abstract contract CustomCurveBase is BaseHook {
-    using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
     using CurrencySettleTake for Currency;
     using SafeCast for uint256;
 
     constructor(IPoolManager _poolManager) BaseHook(_poolManager) {}
 
-    /// NOTE: You should implement a function to manage liquidity
+    /// NOTE: In the inheriting contract, define a function to add liquidity...
 
-    function getAmountOutFromExactInput(bool zeroForOne, Currency input, uint256 amountIn)
+    /// @notice Returns the amount of output tokens for an exact-input swap
+    /// @param amountIn the amount of input tokens
+    /// @param input the input token
+    /// @param output the output token
+    /// @param zeroForOne true if the input token is token0
+    /// @return amountOut the amount of output tokens
+    function getAmountOutFromExactInput(uint256 amountIn, Currency input, Currency output, bool zeroForOne)
         internal
         virtual
         returns (uint256 amountOut);
 
-    function getAmountInForExactOutput(bool zeroForOne, Currency output, uint256 amount)
+    /// @notice Returns the amount of input tokens for an exact-output swap
+    /// @param amountOut the amount of output tokens the user expects to receive
+    /// @param input the input token
+    /// @param output the output token
+    /// @param zeroForOne true if the input token is token0
+    /// @return amountIn the amount of input tokens required to produce amountOut
+    function getAmountInForExactOutput(uint256 amountOut, Currency input, Currency output, bool zeroForOne)
         internal
         virtual
         returns (uint256 amountIn);
 
+    /// @dev Facilitate a custom curve via beforeSwap + return delta
+    /// @dev input tokens are taken from the PoolManager, creating a debt paid by the swapper
+    /// @dev output takens are transferred from the hook to the PoolManager, creating a credit claimed by the swapper
     function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
         external
         override
@@ -48,14 +57,18 @@ abstract contract CustomCurveBase is BaseHook {
         uint256 unspecifiedAmount;
         BeforeSwapDelta returnDelta;
         if (exactInput) {
-            unspecifiedAmount = getAmountOutFromExactInput(params.zeroForOne, specified, specifiedAmount);
+            // in exact-input swaps, the specified token is a debt that gets paid down by the swapper
+            // the unspecified token is credited to the PoolManager, that is claimed by the swapper
+            unspecifiedAmount = getAmountOutFromExactInput(specifiedAmount, specified, unspecified, params.zeroForOne);
             specified.take(poolManager, address(this), specifiedAmount, true);
             unspecified.settle(poolManager, address(this), unspecifiedAmount, true);
 
             returnDelta = toBeforeSwapDelta(specifiedAmount.toInt128(), -unspecifiedAmount.toInt128());
         } else {
             // exactOutput
-            unspecifiedAmount = getAmountInForExactOutput(params.zeroForOne, specified, specifiedAmount);
+            // in exact-output swaps, the unspecified token is a debt that gets paid down by the swapper
+            // the specified token is credited to the PoolManager, that is claimed by the swapper
+            unspecifiedAmount = getAmountInForExactOutput(specifiedAmount, unspecified, specified, params.zeroForOne);
             unspecified.take(poolManager, address(this), unspecifiedAmount, true);
             specified.settle(poolManager, address(this), specifiedAmount, true);
 
@@ -100,14 +113,7 @@ contract ConstantSumCurve is CustomCurveBase {
 
     constructor(IPoolManager _manager) CustomCurveBase(_manager) {}
 
-    /// @notice Not production-ready, only serves an example of hook-owned liquidity
-    function addLiquidity(PoolKey calldata key, uint256 amount0, uint256 amount1) external {
-        poolManager.unlock(
-            abi.encodeCall(this.handleAddLiquidity, (key.currency0, key.currency1, amount0, amount1, msg.sender))
-        );
-    }
-
-    function getAmountOutFromExactInput(bool, Currency, uint256 amountIn)
+    function getAmountOutFromExactInput(uint256 amountIn, Currency, Currency, bool)
         internal
         pure
         override
@@ -117,7 +123,7 @@ contract ConstantSumCurve is CustomCurveBase {
         amountOut = amountIn;
     }
 
-    function getAmountInForExactOutput(bool, Currency, uint256 amountOut)
+    function getAmountInForExactOutput(uint256 amountOut, Currency, Currency, bool)
         internal
         pure
         override
@@ -127,7 +133,15 @@ contract ConstantSumCurve is CustomCurveBase {
         amountIn = amountOut;
     }
 
-    // TODO: restrict callers
+    /// @notice Add liquidity through the hook
+    /// @dev Not production-ready, only serves an example of hook-owned liquidity
+    function addLiquidity(PoolKey calldata key, uint256 amount0, uint256 amount1) external {
+        poolManager.unlock(
+            abi.encodeCall(this.handleAddLiquidity, (key.currency0, key.currency1, amount0, amount1, msg.sender))
+        );
+    }
+
+    /// @dev Handle liquidity addition by taking tokens from the sender and claiming ERC6909 to the hook address
     function handleAddLiquidity(
         Currency currency0,
         Currency currency1,
@@ -140,5 +154,7 @@ contract ConstantSumCurve is CustomCurveBase {
 
         currency1.settle(poolManager, sender, amount1, false);
         currency1.take(poolManager, address(this), amount1, true);
+
+        return abi.encode(amount0, amount1);
     }
 }
