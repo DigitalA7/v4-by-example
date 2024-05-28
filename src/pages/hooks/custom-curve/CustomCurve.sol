@@ -96,11 +96,11 @@ abstract contract CustomCurveBase is BaseHook {
             beforeRemoveLiquidity: false,
             afterAddLiquidity: false,
             afterRemoveLiquidity: false,
-            beforeSwap: true, // -- No-op'ing the swap --  //
+            beforeSwap: true, // -- Custom Curve Handler --  //
             afterSwap: false,
             beforeDonate: false,
             afterDonate: false,
-            beforeSwapReturnDelta: true,
+            beforeSwapReturnDelta: true, // -- Enables Custom Curves --  //
             afterSwapReturnDelta: false,
             afterAddLiquidityReturnDelta: false,
             afterRemoveLiquidityReturnDelta: false
