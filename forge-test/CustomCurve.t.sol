@@ -11,7 +11,7 @@ import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
 import {Deployers} from "v4-core/test/utils/Deployers.sol";
-import {CustomCurve} from "@v4-by-example/pages/hooks/custom-curve/CustomCurve.sol";
+import {ConstantSumCurve} from "@v4-by-example/pages/hooks/custom-curve/CustomCurve.sol";
 import {HookMiner} from "./utils/HookMiner.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 
@@ -19,7 +19,7 @@ contract CustomCurveTest is Test, Deployers {
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
 
-    CustomCurve hook;
+    ConstantSumCurve hook;
     PoolKey poolKey;
     PoolId poolId;
 
@@ -29,10 +29,11 @@ contract CustomCurveTest is Test, Deployers {
         Deployers.deployMintAndApprove2Currencies();
 
         // Deploy the hook to an address with the correct flags
-        uint160 flags = uint160(Hooks.BEFORE_SWAP_FLAG | Hooks.BEFORE_ADD_LIQUIDITY_FLAG);
+        uint160 flags =
+            uint160(Hooks.BEFORE_SWAP_FLAG | Hooks.BEFORE_ADD_LIQUIDITY_FLAG | Hooks.BEFORE_SWAP_RETURNS_DELTA_FLAG);
         (address hookAddress, bytes32 salt) =
-            HookMiner.find(address(this), flags, type(CustomCurve).creationCode, abi.encode(address(manager)));
-        hook = new CustomCurve{salt: salt}(IPoolManager(address(manager)));
+            HookMiner.find(address(this), flags, type(ConstantSumCurve).creationCode, abi.encode(address(manager)));
+        hook = new ConstantSumCurve{salt: salt}(IPoolManager(address(manager)));
         require(address(hook) == hookAddress, "CustomCurveTest: hook address mismatch");
 
         // Create the pool
@@ -40,30 +41,30 @@ contract CustomCurveTest is Test, Deployers {
         poolId = poolKey.toId();
         manager.initialize(poolKey, SQRT_PRICE_1_1, ZERO_BYTES);
 
-        PoolKey memory hookless = PoolKey(currency0, currency1, 3000, 60, IHooks(address(0x0)));
-        manager.initialize(hookless, SQRT_PRICE_1_1, ZERO_BYTES);
-
-        // add liquidity so theres tokens to take
-        modifyLiquidityRouter.modifyLiquidity(
-            hookless, IPoolManager.ModifyLiquidityParams(-60, 60, 10000 ether, 0), ZERO_BYTES
-        );
-
-        // Provide liquidity to the pool
-        IERC20(Currency.unwrap(currency0)).transfer(address(hook), 10_000 ether);
-        IERC20(Currency.unwrap(currency1)).transfer(address(hook), 10_000 ether);
+        // Add liquidity
+        IERC20(Currency.unwrap(currency0)).approve(address(hook), type(uint256).max);
+        IERC20(Currency.unwrap(currency1)).approve(address(hook), type(uint256).max);
+        hook.addLiquidity(poolKey, 100 ether, 100 ether);
     }
 
-    function test_swap() public {
+    function test_swap(bool zeroForOne, int256 amountSpecified) public {
+        amountSpecified = bound(amountSpecified, -100 ether, 100 ether);
+        vm.assume(amountSpecified != 0);
+
+        uint256 token0Before = currency0.balanceOfSelf();
         uint256 token1Before = currency1.balanceOfSelf();
-
-        // Perform a test swap //
-        int256 amount = 10e18;
-        bool zeroForOne = true;
-        swap(poolKey, zeroForOne, amount, ZERO_BYTES);
-        // ------------------- //
-
+        swap(poolKey, zeroForOne, amountSpecified, ZERO_BYTES);
+        uint256 token0After = currency0.balanceOfSelf();
         uint256 token1After = currency1.balanceOfSelf();
 
-        assertEq(token1After - token1Before, 1e18);
+        bool exactInput = amountSpecified < 0;
+        uint256 amountSwapped = exactInput ? uint256(-amountSpecified) : uint256(amountSpecified);
+        if (zeroForOne) {
+            assertEq(token0Before - token0After, amountSwapped);
+            assertEq(token1After - token1Before, amountSwapped);
+        } else {
+            assertEq(token0After - token0Before, amountSwapped);
+            assertEq(token1Before - token1After, amountSwapped);
+        }
     }
 }

@@ -9,14 +9,71 @@ import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {Currency, CurrencyLibrary} from "v4-core/src/types/Currency.sol";
-import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
+import {toBeforeSwapDelta, BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeSwapDelta.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
+import {CurrencySettleTake} from "v4-core/src/libraries/CurrencySettleTake.sol";
+import {SafeCast} from "v4-core/src/libraries/SafeCast.sol";
+import {IUnlockCallback} from "v4-core/src/interfaces/callback/IUnlockCallback.sol";
 
-contract CustomCurve is BaseHook {
+abstract contract CustomCurveBase is BaseHook {
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
+    using CurrencySettleTake for Currency;
+    using SafeCast for uint256;
 
     constructor(IPoolManager _poolManager) BaseHook(_poolManager) {}
+
+    /// NOTE: You should implement a function to manage liquidity
+
+    function getAmountOutFromExactInput(bool zeroForOne, Currency input, uint256 amountIn)
+        internal
+        virtual
+        returns (uint256 amountOut);
+
+    function getAmountInForExactOutput(bool zeroForOne, Currency output, uint256 amount)
+        internal
+        virtual
+        returns (uint256 amountIn);
+
+    function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
+        external
+        override
+        returns (bytes4, BeforeSwapDelta, uint24)
+    {
+        bool exactInput = params.amountSpecified < 0;
+        (Currency specified, Currency unspecified) =
+            (params.zeroForOne == exactInput) ? (key.currency0, key.currency1) : (key.currency1, key.currency0);
+
+        uint256 specifiedAmount = exactInput ? uint256(-params.amountSpecified) : uint256(params.amountSpecified);
+        uint256 unspecifiedAmount;
+        BeforeSwapDelta returnDelta;
+        if (exactInput) {
+            unspecifiedAmount = getAmountOutFromExactInput(params.zeroForOne, specified, specifiedAmount);
+            specified.take(poolManager, address(this), specifiedAmount, true);
+            unspecified.settle(poolManager, address(this), unspecifiedAmount, true);
+
+            returnDelta = toBeforeSwapDelta(specifiedAmount.toInt128(), -unspecifiedAmount.toInt128());
+        } else {
+            // exactOutput
+            unspecifiedAmount = getAmountInForExactOutput(params.zeroForOne, specified, specifiedAmount);
+            unspecified.take(poolManager, address(this), unspecifiedAmount, true);
+            specified.settle(poolManager, address(this), specifiedAmount, true);
+
+            returnDelta = toBeforeSwapDelta(-specifiedAmount.toInt128(), unspecifiedAmount.toInt128());
+        }
+
+        return (BaseHook.beforeSwap.selector, returnDelta, 0);
+    }
+
+    /// @notice No liquidity will be managed by v4 PoolManager
+    function beforeAddLiquidity(address, PoolKey calldata, IPoolManager.ModifyLiquidityParams calldata, bytes calldata)
+        external
+        pure
+        override
+        returns (bytes4)
+    {
+        revert("No v4 Liquidity allowed");
+    }
 
     function getHookPermissions() public pure override returns (Hooks.Permissions memory) {
         return Hooks.Permissions({
@@ -30,77 +87,58 @@ contract CustomCurve is BaseHook {
             afterSwap: false,
             beforeDonate: false,
             afterDonate: false,
-            beforeSwapReturnDelta: false,
+            beforeSwapReturnDelta: true,
             afterSwapReturnDelta: false,
             afterAddLiquidityReturnDelta: false,
             afterRemoveLiquidityReturnDelta: false
         });
     }
+}
 
-    // ------------------------------------------ //
-    // Liquidity Functions (not production ready) //
-    // ------------------------------------------ //
-    /// @notice Add liquidity for the custom curve
-    /// @param key PoolKey of the pool to add liquidity to
-    /// @param liquidityDelta Amount of liquidity to add
-    function addLiquidity(PoolKey calldata key, uint256 liquidityDelta) external {
-        // @dev: Update this
-        // Given spot price and the custom curve, calculate the ratio of tokens to add
-        uint256 token0In;
-        uint256 token1In;
+contract ConstantSumCurve is CustomCurveBase {
+    using CurrencySettleTake for Currency;
 
-        // transfer tokens to hook, to act as liquidity for swaps
-        IERC20(Currency.unwrap(key.currency0)).transferFrom(msg.sender, address(this), token0In);
-        IERC20(Currency.unwrap(key.currency1)).transferFrom(msg.sender, address(this), token1In);
+    constructor(IPoolManager _manager) CustomCurveBase(_manager) {}
 
-        // TODO: production-ready requires minting a receipt token etc
+    /// @notice Not production-ready, only serves an example of hook-owned liquidity
+    function addLiquidity(PoolKey calldata key, uint256 amount0, uint256 amount1) external {
+        poolManager.unlock(
+            abi.encodeCall(this.handleAddLiquidity, (key.currency0, key.currency1, amount0, amount1, msg.sender))
+        );
     }
 
-    /// @notice Calculate the amount of tokens paid by the swapper
-    /// @param params SwapParams passed to the swap function
-    /// @return The amount of tokens paid by the swapper
-    function getTokenInAmount(IPoolManager.SwapParams calldata params) public pure returns (uint256) {
-        return 1e18;
-    }
-
-    /// @notice Calculate the amount of tokens sent to the swapper
-    /// @param params SwapParams passed to the swap function
-    /// @return The amount of tokens sent to the swapper
-    function getTokenOutAmount(IPoolManager.SwapParams calldata params) public pure returns (uint256) {
-        return 1e18;
-    }
-
-    function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
-        external
+    function getAmountOutFromExactInput(bool, Currency, uint256 amountIn)
+        internal
+        pure
         override
-        returns (bytes4, BeforeSwapDelta, uint24)
+        returns (uint256 amountOut)
     {
-        // calculate the amount of tokens, based on a custom curve
-        uint256 tokenInAmount = getTokenInAmount(params); // amount of tokens paid by the swapper
-        uint256 tokenOutAmount = getTokenOutAmount(params); // amount of tokens sent to the swapper
-
-        // determine inbound/outbound token based on 0->1 or 1->0 swap
-        (Currency inbound, Currency outbound) =
-            params.zeroForOne ? (key.currency0, key.currency1) : (key.currency1, key.currency0);
-
-        // inbound token is added to hook's reserves, debt paid by the swapper
-        poolManager.take(inbound, address(this), tokenInAmount);
-
-        // outbound token is removed from hook's reserves, and sent to the swapper
-        outbound.transfer(address(poolManager), tokenOutAmount);
-        poolManager.settle(outbound);
-
-        // prevent normal v4 swap logic from executing
-        return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
+        // in constant-sum curve, tokens trade exactly 1:1
+        amountOut = amountIn;
     }
 
-    /// @notice No liquidity will be managed by v4 PoolManager
-    function beforeAddLiquidity(
-        address,
-        PoolKey calldata key,
-        IPoolManager.ModifyLiquidityParams calldata,
-        bytes calldata
-    ) external override returns (bytes4) {
-        revert("No v4 Liquidity allowed");
+    function getAmountInForExactOutput(bool, Currency, uint256 amountOut)
+        internal
+        pure
+        override
+        returns (uint256 amountIn)
+    {
+        // in constant-sum curve, tokens trade exactly 1:1
+        amountIn = amountOut;
+    }
+
+    // TODO: restrict callers
+    function handleAddLiquidity(
+        Currency currency0,
+        Currency currency1,
+        uint256 amount0,
+        uint256 amount1,
+        address sender
+    ) external selfOnly returns (bytes memory) {
+        currency0.settle(poolManager, sender, amount0, false);
+        currency0.take(poolManager, address(this), amount0, true);
+
+        currency1.settle(poolManager, sender, amount1, false);
+        currency1.take(poolManager, address(this), amount1, true);
     }
 }
