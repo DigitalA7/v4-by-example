@@ -10,7 +10,7 @@ import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "v4-core/src/types/BeforeS
 import {LPFeeLibrary} from "v4-core/src/libraries/LPFeeLibrary.sol";
 
 /// @notice A time-decaying dynamically fee, updated automatically with beforeSwap()
-contract AutoDynamicFee is BaseHook {
+contract DynamicFeeOverride is BaseHook {
     uint256 public immutable startTimestamp;
 
     // Start at 5% fee, decaying at rate of 0.00001% per second
@@ -39,7 +39,7 @@ contract AutoDynamicFee is BaseHook {
                 timeElapsed > 495000 ? uint256(MIN_FEE) : (uint256(START_FEE) - (timeElapsed * decayRate)) / 10;
         }
 
-        // to override the LP fee, its 2nd bit must have its flag set
+        // to override the LP fee, its 2nd bit must be set for the override to apply
         uint256 overrideFee = _currentFee | uint256(LPFeeLibrary.OVERRIDE_FEE_FLAG);
         return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, uint24(overrideFee));
     }
