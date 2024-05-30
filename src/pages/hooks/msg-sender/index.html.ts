@@ -14,7 +14,7 @@ export const keywords = [
 export const codes = [
     {
         fileName: "MsgSenderHookData.sol",
-        code: "Ly8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IE1JVApwcmFnbWEgc29saWRpdHkgXjAuOC4xOTsKCmltcG9ydCB7QmFzZUhvb2t9IGZyb20gIkB2NC1ieS1leGFtcGxlL3V0aWxzL0Jhc2VIb29rLnNvbCI7CgppbXBvcnQge0hvb2tzfSBmcm9tICJ2NC1jb3JlL3NyYy9saWJyYXJpZXMvSG9va3Muc29sIjsKaW1wb3J0IHtJUG9vbE1hbmFnZXJ9IGZyb20gInY0LWNvcmUvc3JjL2ludGVyZmFjZXMvSVBvb2xNYW5hZ2VyLnNvbCI7CmltcG9ydCB7UG9vbEtleX0gZnJvbSAidjQtY29yZS9zcmMvdHlwZXMvUG9vbEtleS5zb2wiOwppbXBvcnQge1Bvb2xJZCwgUG9vbElkTGlicmFyeX0gZnJvbSAidjQtY29yZS9zcmMvdHlwZXMvUG9vbElkLnNvbCI7CmltcG9ydCB7QmFsYW5jZURlbHRhfSBmcm9tICJ2NC1jb3JlL3NyYy90eXBlcy9CYWxhbmNlRGVsdGEuc29sIjsKCmNvbnRyYWN0IE1zZ1NlbmRlckhvb2tEYXRhIGlzIEJhc2VIb29rIHsKICAgIHVzaW5nIFBvb2xJZExpYnJhcnkgZm9yIFBvb2xLZXk7CgogICAgbWFwcGluZyhhZGRyZXNzIHVzZXIgPT4gYm9vbCBhbGxvd2VkKSBwdWJsaWMgYWxsb3dlZFVzZXJzOwoKICAgIGNvbnN0cnVjdG9yKElQb29sTWFuYWdlciBfcG9vbE1hbmFnZXIpIEJhc2VIb29rKF9wb29sTWFuYWdlcikge30KCiAgICBmdW5jdGlvbiBiZWZvcmVTd2FwKGFkZHJlc3MsIFBvb2xLZXkgY2FsbGRhdGEga2V5LCBJUG9vbE1hbmFnZXIuU3dhcFBhcmFtcyBjYWxsZGF0YSwgYnl0ZXMgY2FsbGRhdGEgaG9va0RhdGEpCiAgICAgICAgZXh0ZXJuYWwKICAgICAgICBvdmVycmlkZQogICAgICAgIHJldHVybnMgKGJ5dGVzNCkKICAgIHsKICAgICAgICAvLyAtLS0gUmVhZCB0aGUgdXNlcidzIGFkZHJlc3MgLS0tIC8vCiAgICAgICAgYWRkcmVzcyB1c2VyID0gYWJpLmRlY29kZShob29rRGF0YSwgKGFkZHJlc3MpKTsKICAgICAgICByZXF1aXJlKGFsbG93ZWRVc2Vyc1t1c2VyXSwgIk1zZ1NlbmRlckhvb2tEYXRhOiBVc2VyIG5vdCBhbGxvd2VkIik7CiAgICAgICAgcmV0dXJuIEJhc2VIb29rLmJlZm9yZVN3YXAuc2VsZWN0b3I7CiAgICB9CgogICAgLy8gSGVscGVyIGZ1bmN0aW9uIGZvciBkZW1vbnN0cmF0aW9uCiAgICBmdW5jdGlvbiBzZXRBbGxvd2VkVXNlcihhZGRyZXNzIHVzZXIsIGJvb2wgYWxsb3dlZCkgZXh0ZXJuYWwgewogICAgICAgIGFsbG93ZWRVc2Vyc1t1c2VyXSA9IGFsbG93ZWQ7CiAgICB9CgogICAgZnVuY3Rpb24gZ2V0SG9va1Blcm1pc3Npb25zKCkgcHVibGljIHB1cmUgb3ZlcnJpZGUgcmV0dXJucyAoSG9va3MuUGVybWlzc2lvbnMgbWVtb3J5KSB7CiAgICAgICAgcmV0dXJuIEhvb2tzLlBlcm1pc3Npb25zKHsKICAgICAgICAgICAgYmVmb3JlSW5pdGlhbGl6ZTogZmFsc2UsCiAgICAgICAgICAgIGFmdGVySW5pdGlhbGl6ZTogZmFsc2UsCiAgICAgICAgICAgIGJlZm9yZUFkZExpcXVpZGl0eTogZmFsc2UsCiAgICAgICAgICAgIGJlZm9yZVJlbW92ZUxpcXVpZGl0eTogZmFsc2UsCiAgICAgICAgICAgIGFmdGVyQWRkTGlxdWlkaXR5OiBmYWxzZSwKICAgICAgICAgICAgYWZ0ZXJSZW1vdmVMaXF1aWRpdHk6IGZhbHNlLAogICAgICAgICAgICBiZWZvcmVTd2FwOiB0cnVlLAogICAgICAgICAgICBhZnRlclN3YXA6IGZhbHNlLAogICAgICAgICAgICBiZWZvcmVEb25hdGU6IGZhbHNlLAogICAgICAgICAgICBhZnRlckRvbmF0ZTogZmFsc2UKICAgICAgICB9KTsKICAgIH0KfQo=",
+        code: "Ly8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IE1JVApwcmFnbWEgc29saWRpdHkgXjAuOC4xOTsKCmltcG9ydCB7QmFzZUhvb2t9IGZyb20gInY0LXBlcmlwaGVyeS9CYXNlSG9vay5zb2wiOwoKaW1wb3J0IHtIb29rc30gZnJvbSAidjQtY29yZS9zcmMvbGlicmFyaWVzL0hvb2tzLnNvbCI7CmltcG9ydCB7SVBvb2xNYW5hZ2VyfSBmcm9tICJ2NC1jb3JlL3NyYy9pbnRlcmZhY2VzL0lQb29sTWFuYWdlci5zb2wiOwppbXBvcnQge1Bvb2xLZXl9IGZyb20gInY0LWNvcmUvc3JjL3R5cGVzL1Bvb2xLZXkuc29sIjsKaW1wb3J0IHtQb29sSWQsIFBvb2xJZExpYnJhcnl9IGZyb20gInY0LWNvcmUvc3JjL3R5cGVzL1Bvb2xJZC5zb2wiOwppbXBvcnQge0JhbGFuY2VEZWx0YX0gZnJvbSAidjQtY29yZS9zcmMvdHlwZXMvQmFsYW5jZURlbHRhLnNvbCI7CmltcG9ydCB7QmVmb3JlU3dhcERlbHRhLCBCZWZvcmVTd2FwRGVsdGFMaWJyYXJ5fSBmcm9tICJ2NC1jb3JlL3NyYy90eXBlcy9CZWZvcmVTd2FwRGVsdGEuc29sIjsKCmNvbnRyYWN0IE1zZ1NlbmRlckhvb2tEYXRhIGlzIEJhc2VIb29rIHsKICAgIHVzaW5nIFBvb2xJZExpYnJhcnkgZm9yIFBvb2xLZXk7CgogICAgbWFwcGluZyhhZGRyZXNzIHVzZXIgPT4gYm9vbCBhbGxvd2VkKSBwdWJsaWMgYWxsb3dlZFVzZXJzOwoKICAgIGNvbnN0cnVjdG9yKElQb29sTWFuYWdlciBfcG9vbE1hbmFnZXIpIEJhc2VIb29rKF9wb29sTWFuYWdlcikge30KCiAgICBmdW5jdGlvbiBiZWZvcmVTd2FwKGFkZHJlc3MsIFBvb2xLZXkgY2FsbGRhdGEga2V5LCBJUG9vbE1hbmFnZXIuU3dhcFBhcmFtcyBjYWxsZGF0YSwgYnl0ZXMgY2FsbGRhdGEgaG9va0RhdGEpCiAgICAgICAgZXh0ZXJuYWwKICAgICAgICBvdmVycmlkZQogICAgICAgIHJldHVybnMgKGJ5dGVzNCwgQmVmb3JlU3dhcERlbHRhLCB1aW50MjQpCiAgICB7CiAgICAgICAgLy8gLS0tIFJlYWQgdGhlIHVzZXIncyBhZGRyZXNzIC0tLSAvLwogICAgICAgIGFkZHJlc3MgdXNlciA9IGFiaS5kZWNvZGUoaG9va0RhdGEsIChhZGRyZXNzKSk7CiAgICAgICAgcmVxdWlyZShhbGxvd2VkVXNlcnNbdXNlcl0sICJNc2dTZW5kZXJIb29rRGF0YTogVXNlciBub3QgYWxsb3dlZCIpOwogICAgICAgIHJldHVybiAoQmFzZUhvb2suYmVmb3JlU3dhcC5zZWxlY3RvciwgQmVmb3JlU3dhcERlbHRhTGlicmFyeS5aRVJPX0RFTFRBLCAwKTsKICAgIH0KCiAgICAvLyBIZWxwZXIgZnVuY3Rpb24gZm9yIGRlbW9uc3RyYXRpb24KICAgIGZ1bmN0aW9uIHNldEFsbG93ZWRVc2VyKGFkZHJlc3MgdXNlciwgYm9vbCBhbGxvd2VkKSBleHRlcm5hbCB7CiAgICAgICAgYWxsb3dlZFVzZXJzW3VzZXJdID0gYWxsb3dlZDsKICAgIH0KCiAgICBmdW5jdGlvbiBnZXRIb29rUGVybWlzc2lvbnMoKSBwdWJsaWMgcHVyZSBvdmVycmlkZSByZXR1cm5zIChIb29rcy5QZXJtaXNzaW9ucyBtZW1vcnkpIHsKICAgICAgICByZXR1cm4gSG9va3MuUGVybWlzc2lvbnMoewogICAgICAgICAgICBiZWZvcmVJbml0aWFsaXplOiBmYWxzZSwKICAgICAgICAgICAgYWZ0ZXJJbml0aWFsaXplOiBmYWxzZSwKICAgICAgICAgICAgYmVmb3JlQWRkTGlxdWlkaXR5OiBmYWxzZSwKICAgICAgICAgICAgYmVmb3JlUmVtb3ZlTGlxdWlkaXR5OiBmYWxzZSwKICAgICAgICAgICAgYWZ0ZXJBZGRMaXF1aWRpdHk6IGZhbHNlLAogICAgICAgICAgICBhZnRlclJlbW92ZUxpcXVpZGl0eTogZmFsc2UsCiAgICAgICAgICAgIGJlZm9yZVN3YXA6IHRydWUsCiAgICAgICAgICAgIGFmdGVyU3dhcDogZmFsc2UsCiAgICAgICAgICAgIGJlZm9yZURvbmF0ZTogZmFsc2UsCiAgICAgICAgICAgIGFmdGVyRG9uYXRlOiBmYWxzZSwKICAgICAgICAgICAgYmVmb3JlU3dhcFJldHVybkRlbHRhOiBmYWxzZSwKICAgICAgICAgICAgYWZ0ZXJTd2FwUmV0dXJuRGVsdGE6IGZhbHNlLAogICAgICAgICAgICBhZnRlckFkZExpcXVpZGl0eVJldHVybkRlbHRhOiBmYWxzZSwKICAgICAgICAgICAgYWZ0ZXJSZW1vdmVMaXF1aWRpdHlSZXR1cm5EZWx0YTogZmFsc2UKICAgICAgICB9KTsKICAgIH0KfQo=",
     },
     {
         fileName: "PoolManagerLock.sol",
@@ -55,13 +55,14 @@ swapRouter.swap(key, params, testSettings, hookData);
 <pre><code class="language-solidity"><span class="hljs-comment">// SPDX-License-Identifier: MIT</span>
 <span class="hljs-meta"><span class="hljs-keyword">pragma</span> <span class="hljs-keyword">solidity</span> ^0.8.19;</span>
 
-<span class="hljs-keyword">import</span> {<span class="hljs-title">BaseHook</span>} <span class="hljs-title"><span class="hljs-keyword">from</span></span> <span class="hljs-string">"@v4-by-example/utils/BaseHook.sol"</span>;
+<span class="hljs-keyword">import</span> {<span class="hljs-title">BaseHook</span>} <span class="hljs-title"><span class="hljs-keyword">from</span></span> <span class="hljs-string">"v4-periphery/BaseHook.sol"</span>;
 
 <span class="hljs-keyword">import</span> {<span class="hljs-title">Hooks</span>} <span class="hljs-title"><span class="hljs-keyword">from</span></span> <span class="hljs-string">"v4-core/src/libraries/Hooks.sol"</span>;
 <span class="hljs-keyword">import</span> {<span class="hljs-title">IPoolManager</span>} <span class="hljs-title"><span class="hljs-keyword">from</span></span> <span class="hljs-string">"v4-core/src/interfaces/IPoolManager.sol"</span>;
 <span class="hljs-keyword">import</span> {<span class="hljs-title">PoolKey</span>} <span class="hljs-title"><span class="hljs-keyword">from</span></span> <span class="hljs-string">"v4-core/src/types/PoolKey.sol"</span>;
 <span class="hljs-keyword">import</span> {<span class="hljs-title">PoolId</span>, <span class="hljs-title">PoolIdLibrary</span>} <span class="hljs-title"><span class="hljs-keyword">from</span></span> <span class="hljs-string">"v4-core/src/types/PoolId.sol"</span>;
 <span class="hljs-keyword">import</span> {<span class="hljs-title">BalanceDelta</span>} <span class="hljs-title"><span class="hljs-keyword">from</span></span> <span class="hljs-string">"v4-core/src/types/BalanceDelta.sol"</span>;
+<span class="hljs-keyword">import</span> {<span class="hljs-title">BeforeSwapDelta</span>, <span class="hljs-title">BeforeSwapDeltaLibrary</span>} <span class="hljs-title"><span class="hljs-keyword">from</span></span> <span class="hljs-string">"v4-core/src/types/BeforeSwapDelta.sol"</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">contract</span> <span class="hljs-title">MsgSenderHookData</span> <span class="hljs-keyword">is</span> <span class="hljs-title">BaseHook</span> </span>{
     <span class="hljs-keyword">using</span> <span class="hljs-title">PoolIdLibrary</span> <span class="hljs-title"><span class="hljs-keyword">for</span></span> <span class="hljs-title">PoolKey</span>;
@@ -73,12 +74,12 @@ swapRouter.swap(key, params, testSettings, hookData);
     <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">beforeSwap</span>(<span class="hljs-params"><span class="hljs-keyword">address</span>, PoolKey <span class="hljs-keyword">calldata</span> key, IPoolManager.SwapParams <span class="hljs-keyword">calldata</span>, <span class="hljs-keyword">bytes</span> <span class="hljs-keyword">calldata</span> hookData</span>)
         <span class="hljs-title"><span class="hljs-keyword">external</span></span>
         <span class="hljs-title"><span class="hljs-keyword">override</span></span>
-        <span class="hljs-title"><span class="hljs-keyword">returns</span></span> (<span class="hljs-params"><span class="hljs-keyword">bytes4</span></span>)
+        <span class="hljs-title"><span class="hljs-keyword">returns</span></span> (<span class="hljs-params"><span class="hljs-keyword">bytes4</span>, BeforeSwapDelta, <span class="hljs-keyword">uint24</span></span>)
     </span>{
         <span class="hljs-comment">// --- Read the user&#x27;s address --- //</span>
         <span class="hljs-keyword">address</span> user <span class="hljs-operator">=</span> <span class="hljs-built_in">abi</span>.<span class="hljs-built_in">decode</span>(hookData, (<span class="hljs-keyword">address</span>));
         <span class="hljs-built_in">require</span>(allowedUsers[user], <span class="hljs-string">"MsgSenderHookData: User not allowed"</span>);
-        <span class="hljs-keyword">return</span> BaseHook.beforeSwap.<span class="hljs-built_in">selector</span>;
+        <span class="hljs-keyword">return</span> (BaseHook.beforeSwap.<span class="hljs-built_in">selector</span>, BeforeSwapDeltaLibrary.ZERO_DELTA, <span class="hljs-number">0</span>);
     }
 
     <span class="hljs-comment">// Helper function for demonstration</span>
@@ -97,7 +98,11 @@ swapRouter.swap(key, params, testSettings, hookData);
             beforeSwap: <span class="hljs-literal">true</span>,
             afterSwap: <span class="hljs-literal">false</span>,
             beforeDonate: <span class="hljs-literal">false</span>,
-            afterDonate: <span class="hljs-literal">false</span>
+            afterDonate: <span class="hljs-literal">false</span>,
+            beforeSwapReturnDelta: <span class="hljs-literal">false</span>,
+            afterSwapReturnDelta: <span class="hljs-literal">false</span>,
+            afterAddLiquidityReturnDelta: <span class="hljs-literal">false</span>,
+            afterRemoveLiquidityReturnDelta: <span class="hljs-literal">false</span>
         });
     }
 }
