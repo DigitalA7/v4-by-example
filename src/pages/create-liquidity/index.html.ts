@@ -15,11 +15,11 @@ export const keywords = [
 export const codes = [
     {
         fileName: "CreateLiquidity.sol",
-        code: "Ly8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IE1JVApwcmFnbWEgc29saWRpdHkgXjAuOC4yMDsKCmltcG9ydCB7SVBvb2xNYW5hZ2VyfSBmcm9tICJ2NC1jb3JlL3NyYy9pbnRlcmZhY2VzL0lQb29sTWFuYWdlci5zb2wiOwppbXBvcnQge1Bvb2xLZXl9IGZyb20gInY0LWNvcmUvc3JjL3R5cGVzL1Bvb2xLZXkuc29sIjsKaW1wb3J0IHtQb29sTW9kaWZ5TGlxdWlkaXR5VGVzdH0gZnJvbSAidjQtY29yZS9zcmMvdGVzdC9Qb29sTW9kaWZ5TGlxdWlkaXR5VGVzdC5zb2wiOwoKY29udHJhY3QgQ3JlYXRlTGlxdWlkaXR5IHsKICAgIC8vIHNldCB0aGUgcm91dGVyIGFkZHJlc3MKICAgIFBvb2xNb2RpZnlMaXF1aWRpdHlUZXN0IGxwUm91dGVyID0gUG9vbE1vZGlmeUxpcXVpZGl0eVRlc3QoYWRkcmVzcygweDAxKSk7CgogICAgZnVuY3Rpb24gY3JlYXRlTGlxdWlkaXR5KAogICAgICAgIFBvb2xLZXkgbWVtb3J5IHBvb2xLZXksCiAgICAgICAgaW50MjQgdGlja0xvd2VyLAogICAgICAgIGludDI0IHRpY2tVcHBlciwKICAgICAgICBpbnQyNTYgbGlxdWlkaXR5LAogICAgICAgIGJ5dGVzIGNhbGxkYXRhIGhvb2tEYXRhCiAgICApIGV4dGVybmFsIHsKICAgICAgICAvLyBpZiAwIDwgbGlxdWlkaXR5OiBhZGQgbGlxdWlkaXR5IC0tIG90aGVyd2lzZSByZW1vdmUgbGlxdWlkaXR5CiAgICAgICAgbHBSb3V0ZXIubW9kaWZ5TGlxdWlkaXR5KAogICAgICAgICAgICBwb29sS2V5LAogICAgICAgICAgICBJUG9vbE1hbmFnZXIuTW9kaWZ5TGlxdWlkaXR5UGFyYW1zKHt0aWNrTG93ZXI6IHRpY2tMb3dlciwgdGlja1VwcGVyOiB0aWNrVXBwZXIsIGxpcXVpZGl0eURlbHRhOiBsaXF1aWRpdHl9KSwKICAgICAgICAgICAgaG9va0RhdGEKICAgICAgICApOwogICAgfQp9Cg==",
+        code: "Ly8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IE1JVApwcmFnbWEgc29saWRpdHkgXjAuOC4yMDsKCmltcG9ydCB7SVBvb2xNYW5hZ2VyfSBmcm9tICJ2NC1jb3JlL3NyYy9pbnRlcmZhY2VzL0lQb29sTWFuYWdlci5zb2wiOwppbXBvcnQge1Bvb2xLZXl9IGZyb20gInY0LWNvcmUvc3JjL3R5cGVzL1Bvb2xLZXkuc29sIjsKaW1wb3J0IHtQb29sTW9kaWZ5TGlxdWlkaXR5VGVzdH0gZnJvbSAidjQtY29yZS9zcmMvdGVzdC9Qb29sTW9kaWZ5TGlxdWlkaXR5VGVzdC5zb2wiOwoKY29udHJhY3QgQ3JlYXRlTGlxdWlkaXR5IHsKICAgIC8vIHNldCB0aGUgcm91dGVyIGFkZHJlc3MKICAgIFBvb2xNb2RpZnlMaXF1aWRpdHlUZXN0IGxwUm91dGVyID0gUG9vbE1vZGlmeUxpcXVpZGl0eVRlc3QoYWRkcmVzcygweDAxKSk7CgogICAgZnVuY3Rpb24gY3JlYXRlTGlxdWlkaXR5KAogICAgICAgIFBvb2xLZXkgbWVtb3J5IHBvb2xLZXksCiAgICAgICAgaW50MjQgdGlja0xvd2VyLAogICAgICAgIGludDI0IHRpY2tVcHBlciwKICAgICAgICBpbnQyNTYgbGlxdWlkaXR5LAogICAgICAgIGJ5dGVzIGNhbGxkYXRhIGhvb2tEYXRhCiAgICApIGV4dGVybmFsIHsKICAgICAgICAvLyBpZiAwIDwgbGlxdWlkaXR5OiBhZGQgbGlxdWlkaXR5IC0tIG90aGVyd2lzZSByZW1vdmUgbGlxdWlkaXR5CiAgICAgICAgbHBSb3V0ZXIubW9kaWZ5TGlxdWlkaXR5KAogICAgICAgICAgICBwb29sS2V5LAogICAgICAgICAgICBJUG9vbE1hbmFnZXIuTW9kaWZ5TGlxdWlkaXR5UGFyYW1zKHsKICAgICAgICAgICAgICAgIHRpY2tMb3dlcjogdGlja0xvd2VyLAogICAgICAgICAgICAgICAgdGlja1VwcGVyOiB0aWNrVXBwZXIsCiAgICAgICAgICAgICAgICBsaXF1aWRpdHlEZWx0YTogbGlxdWlkaXR5LAogICAgICAgICAgICAgICAgc2FsdDogMAogICAgICAgICAgICB9KSwKICAgICAgICAgICAgaG9va0RhdGEKICAgICAgICApOwogICAgfQp9Cg==",
     },
     {
         fileName: "CreateLiquidityExampleInputs.sol",
-        code: "aW1wb3J0IHtQb29sTW9kaWZ5TGlxdWlkaXR5VGVzdH0gZnJvbSAidjQtY29yZS9zcmMvdGVzdC9Qb29sTW9kaWZ5TGlxdWlkaXR5VGVzdC5zb2wiOwoKUG9vbE1vZGlmeUxpcXVpZGl0eVRlc3QgbHBSb3V0ZXIgPSBQb29sTW9kaWZ5TGlxdWlkaXR5VGVzdCgweDAxKTsKYWRkcmVzcyB0b2tlbjAgPSBhZGRyZXNzKDB4MTEpOwphZGRyZXNzIHRva2VuMSA9IGFkZHJlc3MoMHgyMik7CmFkZHJlc3MgaG9va0FkZHJlc3MgPSBhZGRyZXNzKDB4ODApOwoKLy8gUG9vbCB0aGF0IHdpbGwgcmVjZWlldmUgbGlxdWlkaXR5ClBvb2xLZXkgbWVtb3J5IHBvb2wgPSBQb29sS2V5KHsKICAgIGN1cnJlbmN5MDogQ3VycmVuY3kud3JhcCh0b2tlbjApLAogICAgY3VycmVuY3kxOiBDdXJyZW5jeS53cmFwKHRva2VuMSksCiAgICBmZWU6IDMwMDAsCiAgICB0aWNrU3BhY2luZzogNjAsCiAgICBob29rczogSUhvb2tzKGhvb2tBZGRyZXNzKQp9KTsKCi8vIGFwcHJvdmUgdG9rZW5zIHRvIHRoZSBMUCBSb3V0ZXIKSUVSQzIwKHRva2VuMCkuYXBwcm92ZShhZGRyZXNzKGxwUm91dGVyKSwgdHlwZSh1aW50MjU2KS5tYXgpOwpJRVJDMjAodG9rZW4xKS5hcHByb3ZlKGFkZHJlc3MobHBSb3V0ZXIpLCB0eXBlKHVpbnQyNTYpLm1heCk7CgovLyBQcm92aWRlIDEwZTE4IHdvcnRoIG9mIGxpcXVpZGl0eSBvbiB0aGUgcmFuZ2Ugb2YgWy02MDAsIDYwMF0KaW50MjQgdGlja0xvd2VyID0gLTYwMDsKaW50MjQgdGlja1VwcGVyID0gNjAwOwppbnQyNTYgbGlxdWlkaXR5ID0gMTBlMTg7CmxwUm91dGVyLm1vZGlmeUxpcXVpZGl0eSgKICAgIHBvb2xLZXksCiAgICBJUG9vbE1hbmFnZXIuTW9kaWZ5TGlxdWlkaXR5UGFyYW1zKHt0aWNrTG93ZXI6IHRpY2tMb3dlciwgdGlja1VwcGVyOiB0aWNrVXBwZXIsIGxpcXVpZGl0eURlbHRhOiBsaXF1aWRpdHl9KSwKICAgIG5ldyBieXRlcygwKQopOwo=",
+        code: "aW1wb3J0IHtQb29sTW9kaWZ5TGlxdWlkaXR5VGVzdH0gZnJvbSAidjQtY29yZS9zcmMvdGVzdC9Qb29sTW9kaWZ5TGlxdWlkaXR5VGVzdC5zb2wiOwoKUG9vbE1vZGlmeUxpcXVpZGl0eVRlc3QgbHBSb3V0ZXIgPSBQb29sTW9kaWZ5TGlxdWlkaXR5VGVzdCgweDAxKTsKYWRkcmVzcyB0b2tlbjAgPSBhZGRyZXNzKDB4MTEpOwphZGRyZXNzIHRva2VuMSA9IGFkZHJlc3MoMHgyMik7CmFkZHJlc3MgaG9va0FkZHJlc3MgPSBhZGRyZXNzKDB4ODApOwoKLy8gUG9vbCB0aGF0IHdpbGwgcmVjZWlldmUgbGlxdWlkaXR5ClBvb2xLZXkgbWVtb3J5IHBvb2wgPSBQb29sS2V5KHsKICAgIGN1cnJlbmN5MDogQ3VycmVuY3kud3JhcCh0b2tlbjApLAogICAgY3VycmVuY3kxOiBDdXJyZW5jeS53cmFwKHRva2VuMSksCiAgICBmZWU6IDMwMDAsCiAgICB0aWNrU3BhY2luZzogNjAsCiAgICBob29rczogSUhvb2tzKGhvb2tBZGRyZXNzKQp9KTsKCi8vIGFwcHJvdmUgdG9rZW5zIHRvIHRoZSBMUCBSb3V0ZXIKSUVSQzIwKHRva2VuMCkuYXBwcm92ZShhZGRyZXNzKGxwUm91dGVyKSwgdHlwZSh1aW50MjU2KS5tYXgpOwpJRVJDMjAodG9rZW4xKS5hcHByb3ZlKGFkZHJlc3MobHBSb3V0ZXIpLCB0eXBlKHVpbnQyNTYpLm1heCk7CgovLyBQcm92aWRlIDEwZTE4IHdvcnRoIG9mIGxpcXVpZGl0eSBvbiB0aGUgcmFuZ2Ugb2YgWy02MDAsIDYwMF0KaW50MjQgdGlja0xvd2VyID0gLTYwMDsKaW50MjQgdGlja1VwcGVyID0gNjAwOwppbnQyNTYgbGlxdWlkaXR5ID0gMTBlMTg7CmxwUm91dGVyLm1vZGlmeUxpcXVpZGl0eSgKICAgIHBvb2xLZXksCiAgICBJUG9vbE1hbmFnZXIuTW9kaWZ5TGlxdWlkaXR5UGFyYW1zKHt0aWNrTG93ZXI6IHRpY2tMb3dlciwgdGlja1VwcGVyOiB0aWNrVXBwZXIsIGxpcXVpZGl0eURlbHRhOiBsaXF1aWRpdHksIHNhbHQ6IDB9KSwKICAgIG5ldyBieXRlcygwKQopOwo=",
     },
 ]
 
@@ -60,7 +60,12 @@ const html = `<ul>
         <span class="hljs-comment">// if 0 &lt; liquidity: add liquidity -- otherwise remove liquidity</span>
         lpRouter.modifyLiquidity(
             poolKey,
-            IPoolManager.ModifyLiquidityParams({tickLower: tickLower, tickUpper: tickUpper, liquidityDelta: liquidity}),
+            IPoolManager.ModifyLiquidityParams({
+                tickLower: tickLower,
+                tickUpper: tickUpper,
+                liquidityDelta: liquidity,
+                <span class="hljs-built_in">salt</span>: <span class="hljs-number">0</span>
+            }),
             hookData
         );
     }
@@ -92,9 +97,11 @@ IERC20(token1).approve(<span class="hljs-keyword">address</span>(lpRouter), <spa
 <span class="hljs-keyword">int256</span> liquidity <span class="hljs-operator">=</span> <span class="hljs-number">10e18</span>;
 lpRouter.modifyLiquidity(
     poolKey,
-    IPoolManager.ModifyLiquidityParams({tickLower: tickLower, tickUpper: tickUpper, liquidityDelta: liquidity}),
+    IPoolManager.ModifyLiquidityParams({tickLower: tickLower, tickUpper: tickUpper, liquidityDelta: liquidity, <span class="hljs-built_in">salt</span>: <span class="hljs-number">0</span>}),
     <span class="hljs-keyword">new</span> <span class="hljs-keyword">bytes</span>(<span class="hljs-number">0</span>)
 );
-</code></pre>`
+</code></pre><hr>
+<p>A note on <em>salt</em>, the test router optionally allows EOAs to specify a <em>salt</em>. In production, the <em>salt</em> will not exposed to the user. The <em>salt</em> allows position managers to distinguish same-range positions for independent users. Distinguishing same-range positions is important for hooks with <code>AFTER_ADD_LIQUIDITY_RETURNS_DELTA_FLAG</code> and <code>AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG</code> where hooks may charge fees and/or penalize liquidity addition/removal. <strong>For 90%+ of use-cases should use a shared salt for warm-storage gas savings</strong></p>
+`
 
 export default html

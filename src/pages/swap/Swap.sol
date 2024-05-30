@@ -16,7 +16,7 @@ contract Swap {
 
     /// @notice Swap tokens
     /// @param key the pool where the swap is happening
-    /// @param amountSpecified the amount of tokens to swap
+    /// @param amountSpecified the amount of tokens to swap. Negative is an exact-input swap
     /// @param zeroForOne whether the swap is token0 -> token1 or token1 -> token0
     /// @param hookData any data to be passed to the pool's hook
     function swap(PoolKey memory key, int256 amountSpecified, bool zeroForOne, bytes memory hookData) internal {

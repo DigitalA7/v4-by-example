@@ -24,6 +24,6 @@ int24 tickUpper = 600;
 int256 liquidity = 10e18;
 lpRouter.modifyLiquidity(
     poolKey,
-    IPoolManager.ModifyLiquidityParams({tickLower: tickLower, tickUpper: tickUpper, liquidityDelta: liquidity}),
+    IPoolManager.ModifyLiquidityParams({tickLower: tickLower, tickUpper: tickUpper, liquidityDelta: liquidity, salt: 0}),
     new bytes(0)
 );

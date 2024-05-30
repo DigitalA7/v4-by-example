@@ -36,3 +36,7 @@ Please see [LiquidityAmounts](https://github.com/Uniswap/v4-periphery/blob/main/
 ```solidity
 {{{CreateLiquidityExampleInputs}}}
 ```
+
+---
+
+A note on *salt*, the test router optionally allows EOAs to specify a *salt*. In production, the *salt* will not exposed to the user. The *salt* allows position managers to distinguish same-range positions for independent users. Distinguishing same-range positions is important for hooks with `AFTER_ADD_LIQUIDITY_RETURNS_DELTA_FLAG` and `AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG` where hooks may charge fees and/or penalize liquidity addition/removal. **For 90%+ of use-cases should use a shared salt for warm-storage gas savings**

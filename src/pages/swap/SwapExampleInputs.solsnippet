@@ -21,12 +21,12 @@ IERC20(token0).approve(address(swapRouter), type(uint256).max);
 IERC20(token1).approve(address(swapRouter), type(uint256).max);
 
 // ---------------------------- //
-// Swap 1e18 token0 into token1
+// Swap exactly 1e18 of token0 into token1
 // ---------------------------- //
 bool zeroForOne = true;
 IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
     zeroForOne: zeroForOne,
-    amountSpecified: 1e18,
+    amountSpecified: -1e18,
     sqrtPriceLimitX96: zeroForOne ? MIN_PRICE_LIMIT : MAX_PRICE_LIMIT // unlimited impact
 });
 
