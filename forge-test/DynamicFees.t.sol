@@ -18,14 +18,14 @@ import {PoolSwapTest} from "v4-core/src/test/PoolSwapTest.sol";
 import {FixedPointMathLib} from "solmate/utils/FixedPointMathLib.sol";
 
 import {ManualDynamicFee} from "@v4-by-example/pages/fees/dynamic-fee/ManualDynamicFee.sol";
-import {AutoDynamicFee} from "@v4-by-example/pages/fees/dynamic-fee/AutoDynamicFee.sol";
+import {DynamicFeeOverride} from "@v4-by-example/pages/fees/dynamic-fee/DynamicFeeOverride.sol";
 
 contract DynamicFeesTest is Test, Deployers, GasSnapshot {
     using FixedPointMathLib for uint256;
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
 
-    AutoDynamicFee autoDynamicFee;
+    DynamicFeeOverride autoDynamicFee;
     ManualDynamicFee manualDynamicFee;
 
     PoolKey autoDynamicFeePoolKey;
@@ -39,8 +39,8 @@ contract DynamicFeesTest is Test, Deployers, GasSnapshot {
         // Deploy the hook to an address with the correct flags
         uint160 flags = uint160(Hooks.AFTER_INITIALIZE_FLAG | Hooks.BEFORE_SWAP_FLAG);
         (address hookAddress, bytes32 salt) =
-            HookMiner.find(address(this), flags, type(AutoDynamicFee).creationCode, abi.encode(address(manager)));
-        autoDynamicFee = new AutoDynamicFee{salt: salt}(IPoolManager(address(manager)));
+            HookMiner.find(address(this), flags, type(DynamicFeeOverride).creationCode, abi.encode(address(manager)));
+        autoDynamicFee = new DynamicFeeOverride{salt: salt}(IPoolManager(address(manager)));
         require(address(autoDynamicFee) == hookAddress, "hook address mismatch");
 
         flags = uint160(Hooks.AFTER_INITIALIZE_FLAG);

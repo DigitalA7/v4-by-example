@@ -23,14 +23,7 @@ Example:
 
 ### Note on Protocol Fee
 
-The protocol fee is **not** currently enabled. However, it is expressed as a percentage of the swap fee and _taken_ from the swap fee
-
-Example:
-
-- swap fee 0.30%, protocol fee 0.10%
-- A swapper pays 1e18 in fees (0.30% of their swap size)
-- 0.001e18 token (0.10% of 1e18) is taken for the protocol
-- 0.999e18 token (99.9% of 1e18) is given the liquidity providers
+The protocol fee is **not** currently enabled. However, it is an additive fee on top of the Swap Fee and is expressed as a percentage
 
 ---
 

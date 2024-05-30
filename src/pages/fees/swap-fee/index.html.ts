@@ -32,14 +32,7 @@ const html = `<p>Swap fees are accrued to liquidity providers and paid by swappe
 <li><strong>Exact Output</strong>: User is willing to pay USDC for 0.01 ETH: fee is taken from the <strong>USDC input</strong></li>
 </ul>
 <h3>Note on Protocol Fee</h3>
-<p>The protocol fee is <strong>not</strong> currently enabled. However, it is expressed as a percentage of the swap fee and <em>taken</em> from the swap fee</p>
-<p>Example:</p>
-<ul>
-<li>swap fee 0.30%, protocol fee 0.10%</li>
-<li>A swapper pays 1e18 in fees (0.30% of their swap size)</li>
-<li>0.001e18 token (0.10% of 1e18) is taken for the protocol</li>
-<li>0.999e18 token (99.9% of 1e18) is given the liquidity providers</li>
-</ul>
+<p>The protocol fee is <strong>not</strong> currently enabled. However, it is an additive fee on top of the Swap Fee and is expressed as a percentage</p>
 <hr>
 <h2>Example: Setting a Swap Fee</h2>
 <p>The swap fee is set during pool creation, as defined in its <code>PoolKey</code></p>

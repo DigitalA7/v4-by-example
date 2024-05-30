@@ -23,25 +23,6 @@ contract FixedHookFee is BaseHook {
 
     constructor(IPoolManager _poolManager) BaseHook(_poolManager) {}
 
-    function getHookPermissions() public pure override returns (Hooks.Permissions memory) {
-        return Hooks.Permissions({
-            beforeInitialize: false,
-            afterInitialize: false,
-            beforeAddLiquidity: false,
-            beforeRemoveLiquidity: false,
-            afterAddLiquidity: false,
-            afterRemoveLiquidity: false,
-            beforeSwap: false,
-            afterSwap: true,
-            beforeDonate: false,
-            afterDonate: false,
-            beforeSwapReturnDelta: false,
-            afterSwapReturnDelta: true, // -- Fee charged on unspecified after swap -- //
-            afterAddLiquidityReturnDelta: false,
-            afterRemoveLiquidityReturnDelta: false
-        });
-    }
-
     function afterSwap(
         address,
         PoolKey calldata key,
@@ -62,11 +43,30 @@ contract FixedHookFee is BaseHook {
             poolManager.mint(address(this), key.currency0.toId(), FIXED_HOOK_FEE);
         }
 
-        // by returning the amount the amount the hook has taken,
+        // by returning the amount the amount the hook has taken, PoolManager will apply the hook's delta to the swapper's delta
         return (BaseHook.afterSwap.selector, FIXED_HOOK_FEE.toInt128());
     }
 
     /// @dev Because the fee is taking as an ERC6909 claim, you'll want to implement logic to collect
     /// fee as ERC20 OR ERC6909...
     /// ...
+
+    function getHookPermissions() public pure override returns (Hooks.Permissions memory) {
+        return Hooks.Permissions({
+            beforeInitialize: false,
+            afterInitialize: false,
+            beforeAddLiquidity: false,
+            beforeRemoveLiquidity: false,
+            afterAddLiquidity: false,
+            afterRemoveLiquidity: false,
+            beforeSwap: false,
+            afterSwap: true,
+            beforeDonate: false,
+            afterDonate: false,
+            beforeSwapReturnDelta: false,
+            afterSwapReturnDelta: true, // -- Fee charged on unspecified after swap -- //
+            afterAddLiquidityReturnDelta: false,
+            afterRemoveLiquidityReturnDelta: false
+        });
+    }
 }
