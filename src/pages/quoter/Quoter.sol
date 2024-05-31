@@ -14,10 +14,12 @@ import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
 import {Deployers} from "v4-core/test/utils/Deployers.sol";
 import {IQuoter} from "v4-periphery/interfaces/IQuoter.sol";
 import {Quoter} from "v4-periphery/lens/Quoter.sol";
+import {StateLibrary} from "v4-core/src/libraries/StateLibrary.sol";
 
 contract QuoterTest is Test, Deployers {
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
+    using StateLibrary for IPoolManager;
 
     PoolKey poolKey;
     PoolId poolId;
@@ -32,12 +34,12 @@ contract QuoterTest is Test, Deployers {
         // Create the pool
         poolKey = PoolKey(currency0, currency1, 3000, 60, IHooks(address(0x0)));
         poolId = poolKey.toId();
-        manager.initialize(poolKey, Constants.SQRT_RATIO_1_1, ZERO_BYTES);
+        manager.initialize(poolKey, Constants.SQRT_PRICE_1_1, ZERO_BYTES);
 
         // Provide liquidity to the pool
         modifyLiquidityRouter.modifyLiquidity(
             poolKey,
-            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 1000 ether),
+            IPoolManager.ModifyLiquidityParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 1000 ether, 0),
             ZERO_BYTES
         );
     }
@@ -58,10 +60,10 @@ contract QuoterTest is Test, Deployers {
         console2.log("Quoted output amount: ", int256(outputAmount));
 
         // Perform a test swap
-        BalanceDelta swapDelta = swap(poolKey, zeroForOne, int256(uint256(amountIn)), ZERO_BYTES);
+        BalanceDelta swapDelta = swap(poolKey, zeroForOne, -int256(uint256(amountIn)), ZERO_BYTES);
 
         // quote agrees with the actual swap
-        assertEq(outputAmount, swapDelta.amount1());
+        assertEq(outputAmount, -swapDelta.amount1());
     }
 
     function testQuoter_input() public {
@@ -80,8 +82,8 @@ contract QuoterTest is Test, Deployers {
         console2.log("Quoted input amount: ", int256(inputAmount));
 
         // Perform a exact-output swap
-        BalanceDelta swapDelta = swap(poolKey, zeroForOne, -int256(uint256(amountOut)), ZERO_BYTES);
-        assertEq(inputAmount, swapDelta.amount0());
+        BalanceDelta swapDelta = swap(poolKey, zeroForOne, int256(uint256(amountOut)), ZERO_BYTES);
+        assertEq(inputAmount, -swapDelta.amount0());
         (uint160 sqrtPriceX96,,,) = manager.getSlot0(poolId);
         assertEq(sqrtPriceX96After, sqrtPriceX96);
     }

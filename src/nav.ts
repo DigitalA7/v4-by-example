@@ -32,7 +32,7 @@ export const SOL_ROUTES: Route[] = [
 export const HOOK_ROUTES: Route[] = [
   {
     path: "no-op",
-    title: "No Op"
+    title: "NoOp Swap"
   },
   {
     path: "custom-curve",

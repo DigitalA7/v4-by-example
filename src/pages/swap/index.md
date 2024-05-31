@@ -21,7 +21,9 @@ Swapping involves 3 primary arguments:
 - The direction of the swap, `token0 -> token1` or `token1 -> token0`
 - The input token amount
 
-(Note: A quoter contract is unavailable at this time)
+*exact-input*: `amountSpecified` is negative -- users provide an exact amount of input tokens
+
+*exact-output*: `amountSpecified` is positive -- users **expect** an exact amount of output tokens
 
 #### Expect Uniswap Labs to release an official contract around launch
 
