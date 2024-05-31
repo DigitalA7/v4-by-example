@@ -32,6 +32,8 @@ contract ManualDynamicFee is BaseHook {
             uint256 timeElapsed = block.timestamp - startTimestamp;
             _currentFee = timeElapsed > 495000 ? uint24(MIN_FEE) : uint24((START_FEE - (timeElapsed * decayRate)) / 10);
         }
+
+        // Pushes/updates the swap fee for the pool
         poolManager.updateDynamicLPFee(key, _currentFee);
     }
 
@@ -40,6 +42,7 @@ contract ManualDynamicFee is BaseHook {
         override
         returns (bytes4)
     {
+        // after pool is initialized, set the initial fee
         setFee(key);
         return BaseHook.afterInitialize.selector;
     }

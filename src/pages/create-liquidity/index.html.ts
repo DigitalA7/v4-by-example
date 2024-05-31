@@ -101,7 +101,7 @@ lpRouter.modifyLiquidity(
     <span class="hljs-keyword">new</span> <span class="hljs-keyword">bytes</span>(<span class="hljs-number">0</span>)
 );
 </code></pre><hr>
-<p>A note on <em>salt</em>, the test router optionally allows EOAs to specify a <em>salt</em>. In production, the <em>salt</em> will not exposed to the user. The <em>salt</em> allows position managers to distinguish same-range positions for independent users. Distinguishing same-range positions is important for hooks with <code>AFTER_ADD_LIQUIDITY_RETURNS_DELTA_FLAG</code> and <code>AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG</code> where hooks may charge fees and/or penalize liquidity addition/removal. <strong>For 90%+ of use-cases should use a shared salt for warm-storage gas savings</strong></p>
+<p>A note on <em>salt</em>, the test router optionally allows EOAs to specify a <em>salt</em>. In production, the <em>salt</em> will not exposed to the user. The <em>salt</em> allows position managers to distinguish same-range positions for independent users. Distinguishing same-range positions is important for hooks with <code>AFTER_ADD_LIQUIDITY_RETURNS_DELTA_FLAG</code> and <code>AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG</code> where hooks may charge fees and/or penalize liquidity addition/removal. <strong>For 90%+ of use-cases, you should use a shared salt for warm-storage gas savings</strong></p>
 `
 
 export default html
