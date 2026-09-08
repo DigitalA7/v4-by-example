@@ -2,6 +2,16 @@
 
 Solidity snippets for all things Uniswap v4
 
+## Parcours français
+
+1. [Présentation](docs/fr/01-presentation.md)
+2. [Installation](docs/fr/02-installation.md)
+3. [Architecture](docs/fr/03-architecture.md)
+4. [Initialiser un pool](docs/fr/04-initialiser-pool.md)
+5. [Ajouter de la liquidité](docs/fr/05-liquidite.md)
+6. [Effectuer un swap](docs/fr/06-swap.md)
+7. [Frais, hooks et tests](docs/fr/07-hooks-tests.md)
+
 *largely inspired by [solidity-by-example](https://solidity-by-example.org)*
 
 ---
